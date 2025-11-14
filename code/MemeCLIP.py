@@ -31,8 +31,8 @@ class MemeCLIP(pl.LightningModule):
         self.classifier = CosineClassifier(feat_dim = output_input_dim, num_classes=cfg.num_classes, dtype=self.clip_model.dtype)
         self.init_head_text_feat()
         self.text_encoder =  CLIP_Text(self.clip_model)
-        self.img_adapter = Adapter(self.map_dim, 4).to(self.clip_model.dtype)
-        self.text_adapter = Adapter(self.map_dim, 4).to(self.clip_model.dtype)
+        self.img_adapter = Adapter(self.cfg.map_dim, 4).to(self.clip_model.dtype)
+        self.text_adapter = Adapter(self.cfg.map_dim, 4).to(self.clip_model.dtype)
         self.clip_model.visual.proj = None
 
         for _, p in self.clip_model.named_parameters():
