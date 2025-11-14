@@ -19,7 +19,9 @@ class MemeCLIP(pl.LightningModule):
 
         self.acc = torchmetrics.Accuracy(task='multiclass', num_classes = cfg.num_classes)
         self.auroc = torchmetrics.AUROC(task='multiclass', num_classes = cfg.num_classes)
-        self.f1 = torchmetrics.F1Score(task='multiclass', num_classes = cfg.num_classes, average='macro')
+        self.prec = torchmetrics.Precision(task='multiclass', num_classes = cfg.num_classes, average='weighted')
+        self.rec = torchmetrics.Recall(task='multiclass', num_classes = cfg.num_classes, average='weighted')
+        self.f1 = torchmetrics.F1Score(task='multiclass', num_classes = cfg.num_classes, average='weighted')
 
         self.clip_model, _ = clip.load(self.cfg.clip_variant, device="cuda", jit=False)
         self.clip_model.float()
@@ -102,6 +104,8 @@ class MemeCLIP(pl.LightningModule):
         output['loss'] = self.cross_entropy_loss(logits, batch['labels'])
         output['accuracy'] = self.acc(preds, batch['labels'])
         output['auroc'] = self.auroc(preds_proxy, batch['labels'])
+        output['precision'] = self.prec(preds, batch['labels'])
+        output['recall'] = self.rec(preds, batch['labels'])
         output['f1'] = self.f1(preds, batch['labels'])
 
         return output
@@ -127,6 +131,8 @@ class MemeCLIP(pl.LightningModule):
         self.log(f'val/loss', output['loss'])
         self.log(f'val/accuracy', output['accuracy'], on_step=False, on_epoch=True, prog_bar=True)
         self.log(f'val/auroc', output['auroc'], on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f'val/precision', output['precision'], on_step=False, on_epoch=True, prog_bar=True)
+        self.log(f'val/recall', output['recall'], on_step=False, on_epoch=True, prog_bar=True)
         self.log(f'val/f1', output['f1'], on_step=False, on_epoch=True, prog_bar=True)
 
 
@@ -137,6 +143,8 @@ class MemeCLIP(pl.LightningModule):
         output = self.common_step(batch)
         self.log(f'test/accuracy', output['accuracy'])
         self.log(f'test/auroc', output['auroc'])
+        self.log(f'test/precision', output['precision'])
+        self.log(f'test/recall', output['recall'])
         self.log(f'test/f1', output['f1'])
 
         return output
@@ -144,16 +152,22 @@ class MemeCLIP(pl.LightningModule):
     def on_train_epoch_end(self):
         self.acc.reset()
         self.auroc.reset()
+        self.prec.reset()
+        self.rec.reset()
         self.f1.reset()
         
     def on_validation_epoch_end(self):
         self.acc.reset()
         self.auroc.reset()
+        self.prec.reset()
+        self.rec.reset()
         self.f1.reset()
 
     def on_test_epoch_end(self):
         self.acc.reset()
         self.auroc.reset()
+        self.prec.reset()
+        self.rec.reset()
         self.f1.reset()
 
     def configure_optimizers(self):
@@ -167,3 +181,4 @@ class MemeCLIP(pl.LightningModule):
 def create_model(cfg):
     model = MemeCLIP(cfg)
     return model
+
