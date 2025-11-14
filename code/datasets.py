@@ -69,7 +69,7 @@ class Custom_Collator(object):
         self.clip_model.float().eval()
 
     def __call__(self, batch):
-        labels = torch.LongTensor([item['label'] for item in batch])
+        labels = torch.LongTensor([item['label'] == 'harmful' for item in batch])
         idx_memes = [item['idx_meme'] for item in batch]
 
         batch_new = {'labels': labels,
