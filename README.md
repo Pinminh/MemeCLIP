@@ -23,6 +23,8 @@ This is a modified repository of the original paper [MemeCLIP: Leveraging CLIP R
 
 This repository contains a modified implementation of MemeCLIP adapted for the **ViHarMe** (Vietnamese Harmful Meme) dataset - a specialized dataset for detecting harmful memes in Vietnamese social media contexts.
 
+ViHarMe is still in experimental and developing stage currently. Feel free to access a sample portion of our data on [Google Drive](https://drive.google.com/drive/folders/1JcQkzuV1EZHkxYpkA3Q8Uw3EKTwhqdKk?usp=sharing).
+
 ### ViHarMe Dataset Structure
 
 Each sample in the ViHarMe dataset contains:
